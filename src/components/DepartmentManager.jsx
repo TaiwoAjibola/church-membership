@@ -45,9 +45,14 @@ export default function DepartmentManager({ departments, onAdd, onDelete }) {
               key={dept.id}
               className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-650 transition-colors"
             >
-              <span className="text-gray-900 dark:text-white font-medium">
-                {dept.name}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-gray-900 dark:text-white font-medium">
+                  {dept.name}
+                </span>
+                <span className="text-sm font-mono text-blue-600 dark:text-blue-400 mt-1">
+                  {dept.id}
+                </span>
+              </div>
               <button
                 onClick={() => onDelete(dept.id)}
                 className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
