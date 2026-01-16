@@ -60,8 +60,15 @@ function AppContent() {
   });
 
   useEffect(() => {
-    setMembers(storageService.getMembers());
-    setDepartments(departmentService.getDepartments());
+    const loadData = async () => {
+      const [membersData, departmentsData] = await Promise.all([
+        storageService.getMembers(),
+        departmentService.getDepartments(),
+      ]);
+      setMembers(membersData);
+      setDepartments(departmentsData);
+    };
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -74,14 +81,15 @@ function AppContent() {
     }
   }, [editingMember, reset]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
       const memberToSave = editingMember
         ? { ...data, id: editingMember.id }
         : data;
       
-      storageService.saveMember(memberToSave);
-      setMembers(storageService.getMembers());
+      await storageService.saveMember(memberToSave);
+      const updatedMembers = await storageService.getMembers();
+      setMembers(updatedMembers);
       
       reset();
       setEditingMember(null);
@@ -98,10 +106,11 @@ function AppContent() {
     setEditingMember(member);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this member?')) {
-      storageService.deleteMember(id);
-      setMembers(storageService.getMembers());
+      await storageService.deleteMember(id);
+      const updatedMembers = await storageService.getMembers();
+      setMembers(updatedMembers);
     }
   };
 
@@ -161,15 +170,17 @@ function AppContent() {
     setEditingMember(null);
   };
 
-  const handleAddDepartment = (name) => {
-    departmentService.saveDepartment(name);
-    setDepartments(departmentService.getDepartments());
+  const handleAddDepartment = async (name) => {
+    await departmentService.saveDepartment(name);
+    const updatedDepartments = await departmentService.getDepartments();
+    setDepartments(updatedDepartments);
   };
 
-  const handleDeleteDepartment = (id) => {
+  const handleDeleteDepartment = async (id) => {
     if (confirm('Are you sure you want to delete this department?')) {
-      departmentService.deleteDepartment(id);
-      setDepartments(departmentService.getDepartments());
+      await departmentService.deleteDepartment(id);
+      const updatedDepartments = await departmentService.getDepartments();
+      setDepartments(updatedDepartments);
     }
   };
 

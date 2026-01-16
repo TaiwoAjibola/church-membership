@@ -8,16 +8,18 @@ A modern, production-ready web application for collecting, validating, and manag
 - **🔐 Admin Authentication** - Secure login system for admin access
 - **Personal Details Form**: Collect first name, middle name, last name, phone, address, marital status, and date of birth
 - **Church Details Form**: Track worker/volunteer status and department assignments
-- **Dynamic Department Management**: Create and manage departments, then assign members with roles (Member, Assistant HoD, HoD)
-- **Form Validation**: Real-time validation using Zod schemas
-- **Data Persistence**: LocalStorage-based data management
+- **Dynamic Department Management**: Create and manage departments with unique IDs (JCC-DEPT-001, etc.)
+- **Member ID System**: Auto-generated IDs for each member type (JCC-WRK-001, JCC-VOL-001, JCC-MBR-001)
+- **Form Validation**: Real-time validation using Zod schemas with Nigerian phone number format
+- **Data Persistence**: Supabase PostgreSQL database for shared data across all users
 
 ### Optional Features
 - **Edit & Delete**: Modify or remove member records
-- **Table View**: View all members in a sortable table
-- **CSV Export**: Export member data to CSV format
+- **Table View**: View all members with IDs in a sortable table
+- **CSV Export**: Export member data including IDs to CSV format
 - **Dark Mode**: Toggle between light and dark themes with persistence
 - **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
+- **Multi-Department Assignment**: Members can belong to multiple departments
 
 ## 🔐 Authentication
 
@@ -44,7 +46,9 @@ Default admin credentials:
 - **Form Management**: React Hook Form
 - **Validation**: Zod
 - **Icons**: Lucide React
-- **Data Storage**: LocalStorage
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Custom context-based auth
+- **Deployment**: Vercel
 
 ## 📁 Project Structure
 
@@ -73,17 +77,33 @@ src/
 
 ### Installation
 
-1. Install dependencies:
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/TaiwoAjibola/church-membership.git
+cd "church Details"
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Start the development server:
+3. Set up Supabase:
+   - Follow the detailed instructions in [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+   - Create a `.env` file with your Supabase credentials:
+     ```env
+     VITE_SUPABASE_URL=your_supabase_project_url
+     VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+     ```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-3. Open your browser to `http://localhost:5173`
+5. Open your browser to `http://localhost:5173`
 
 ### Build for Production
 
@@ -102,24 +122,30 @@ Each member record follows this structure:
 
 ```javascript
 {
-  "id": "uuid",
+  "id": "JCC-WRK-001",  // Auto-generated based on member type
   "personalDetails": {
     "firstName": "John",
     "middleName": "Paul",
     "lastName": "Doe",
-    "phone": "+1234567890",
-    "address": "123 Main St, City, State",
+    "phone": "08012345678",  // Nigerian format
+    "houseNumber": "15",
+    "streetName": "Church Street",
+    "busStop": "Central",
+    "city": "Lagos",
+    "state": "Lagos",
     "maritalStatus": "Married",
     "dateOfBirth": "1990-01-01"
   },
   "churchDetails": {
-    "isWorker": true,
+    "memberType": "Worker",  // Worker, Volunteer, or Church Member
     "departments": [
       {
+        "id": "JCC-DEPT-001",
         "name": "Media",
         "role": "HoD"
       },
       {
+        "id": "JCC-DEPT-002",
         "name": "Choir",
         "role": "Member"
       }
@@ -130,13 +156,26 @@ Each member record follows this structure:
 }
 ```
 
+### Member ID Formats
+- Workers: `JCC-WRK-001`, `JCC-WRK-002`, etc.
+- Volunteers: `JCC-VOL-001`, `JCC-VOL-002`, etc.
+- Church Members: `JCC-MBR-001`, `JCC-MBR-002`, etc.
+- Departments: `JCC-DEPT-001`, `JCC-DEPT-002`, etc.
+
 ## 🎯 Usage
 
 ### Adding a New Member
 1. Fill in all required fields (marked with *)
-2. Select worker status (Yes/No)
-3. If worker, add departments and assign roles
+2. Select member type (Worker, Volunteer, or Church Member)
+3. If Worker or Volunteer, add departments and assign roles (can add multiple)
 4. Click "Add Member" (button is disabled until form is valid)
+5. Member will be assigned an auto-generated ID based on type
+
+### Managing Departments
+1. Switch to "Manage Departments" tab
+2. Enter department name and click "Add"
+3. Each department gets a unique ID (JCC-DEPT-001, etc.)
+4. Delete departments by clicking the trash icon
 
 ### Editing a Member
 1. Switch to "View Members" tab
@@ -147,64 +186,58 @@ Each member record follows this structure:
 ### Exporting Data
 1. Go to "View Members" tab
 2. Click "Export CSV" button
-3. CSV file downloads automatically
+3. CSV file includes all member details and IDs
 
 ### Dark Mode
 Click the moon/sun icon in the top-right corner to toggle themes.
 
 ## 🔒 Data Storage
 
-Data is stored in browser LocalStorage under the key `church_members`. This provides:
-- Instant access without network requests
-- Data persistence across sessions
-- Simple migration path to backend storage
+Data is stored in **Supabase PostgreSQL database**. This provides:
+- **Shared data across all users** - Everyone sees the same information
+- Real-time data synchronization
+- Reliable cloud storage with automatic backups
+- Row Level Security for data protection
+- Scalable for growing church membership
 
-## 🚧 Future Enhancements
-
-Potential features for extension:
-- Backend API integration (Firebase/Supabase)
-- Admin dashboard for analytics
-- Search and filter functionality
-- Bulk import from CSV
-- Print member cards
-- Email notifications
-- Advanced reporting
-- Multi-user authentication with roles
+**Important**: Unlike localStorage, all users accessing the application share the same database, making it perfect for church administration teams.
 
 ## 🚀 Deployment
 
 ### Deploy to Vercel
 
-1. **Push to GitHub** (if not already done):
-```bash
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin master
-```
+**See detailed deployment instructions in [DEPLOYMENT.md](DEPLOYMENT.md)**
 
-2. **Deploy on Vercel**:
-   - Go to [vercel.com](https://vercel.com)
-   - Click "New Project"
-   - Import your GitHub repository
-   - Vercel will auto-detect Vite settings
-   - Click "Deploy"
+Quick steps:
+1. Push your code to GitHub
+2. Connect your GitHub repo to Vercel
+3. Add Supabase environment variables in Vercel settings:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+4. Deploy!
 
-3. **Your app will be live!** 🎉
+### Important: Environment Variables on Vercel
 
-The `vercel.json` file is already configured for proper SPA routing.
+After deploying to Vercel, you MUST add your Supabase credentials as environment variables:
 
-### Environment Variables (Optional)
+1. Go to your Vercel project settings
+2. Navigate to **Settings** → **Environment Variables**
+3. Add both `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+4. Redeploy the application
 
-For production, consider using environment variables for credentials:
-```bash
-VITE_ADMIN_USERNAME=your_username
-VITE_ADMIN_PASSWORD=your_password
-```
+Without these, the app will not connect to your database.
 
-Update [src/contexts/AuthContext.jsx](src/contexts/AuthContext.jsx) to use:
-```javascript
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'church2026';
-```
+## 🚧 Future Enhancements
+
+Potential features for extension:
+- Advanced search and filter functionality
+- Bulk import from CSV
+- Print member cards/ID badges
+- Email notifications for birthdays
+- Advanced reporting and analytics
+- Multi-user authentication with roles (Admin, Viewer, Editor)
+- Attendance tracking system
+- SMS integration for announcements
 
 ## 📝 License
 

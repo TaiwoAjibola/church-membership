@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'church_members';
+import { supabase } from '../lib/supabase';
 
 const generateMemberId = (members, memberType) => {
   // Filter members by type to get correct count
@@ -13,55 +13,88 @@ const generateMemberId = (members, memberType) => {
 };
 
 export const storageService = {
-  getMembers: () => {
+  getMembers: async () => {
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const { data, error } = await supabase
+        .from('members')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Transform database format to app format
+      return data.map(member => ({
+        id: member.id,
+        personalDetails: member.personal_details,
+        churchDetails: member.church_details,
+        createdAt: member.created_at,
+        updatedAt: member.updated_at,
+      }));
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      console.error('Error reading from Supabase:', error);
       return [];
     }
   },
 
-  saveMember: (member) => {
+  saveMember: async (member) => {
     try {
-      const members = storageService.getMembers();
-      const existingIndex = members.findIndex(m => m.id === member.id);
+      const members = await storageService.getMembers();
+      const existingMember = members.find(m => m.id === member.id);
       
-      if (existingIndex >= 0) {
-        members[existingIndex] = { ...member, updatedAt: new Date().toISOString() };
+      if (existingMember) {
+        // Update existing member
+        const { data, error } = await supabase
+          .from('members')
+          .update({
+            personal_details: member.personalDetails,
+            church_details: member.churchDetails,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', member.id)
+          .select();
+        
+        if (error) throw error;
+        return await storageService.getMembers();
       } else {
+        // Create new member with generated ID
         const memberId = generateMemberId(members, member.churchDetails.memberType);
-        members.push({
-          ...member,
-          id: memberId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
+        const { data, error } = await supabase
+          .from('members')
+          .insert({
+            id: memberId,
+            personal_details: member.personalDetails,
+            church_details: member.churchDetails,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select();
+        
+        if (error) throw error;
+        return await storageService.getMembers();
       }
-      
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
-      return members;
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
+      console.error('Error saving to Supabase:', error);
       throw error;
     }
   },
 
-  deleteMember: (id) => {
+  deleteMember: async (id) => {
     try {
-      const members = storageService.getMembers();
-      const filtered = members.filter(m => m.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-      return filtered;
+      const { error } = await supabase
+        .from('members')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      return await storageService.getMembers();
     } catch (error) {
-      console.error('Error deleting from localStorage:', error);
+      console.error('Error deleting from Supabase:', error);
       throw error;
     }
   },
 
-  getMemberById: (id) => {
-    const members = storageService.getMembers();
+  getMemberById: async (id) => {
+    const members = await storageService.getMembers();
     return members.find(m => m.id === id);
   },
 };
