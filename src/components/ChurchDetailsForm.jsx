@@ -41,19 +41,6 @@ export default function ChurchDetailsForm({ watch, setValue, errors, availableDe
             />
             <span className="text-gray-700 dark:text-gray-300">Volunteer</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              value="Church Member"
-              checked={memberType === 'Church Member'}
-              onChange={() => {
-                setValue('churchDetails.memberType', 'Church Member');
-                setValue('churchDetails.departments', []);
-              }}
-              className="w-4 h-4 text-primary-600 focus:ring-primary-500"
-            />
-            <span className="text-gray-700 dark:text-gray-300">Church Member</span>
-          </label>
         </div>
         {errors.churchDetails?.memberType && (
           <p className="mt-2 text-sm text-red-500">

@@ -32,7 +32,7 @@ export default function DepartmentInput({ memberDepartments, availableDepartment
       <div className="flex gap-2">
         <select
           onChange={handleAddDepartment}
-          className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700"
+          className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           defaultValue=""
         >
           <option value="" disabled>Select a department</option>

@@ -77,7 +77,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
           <input
             type="text"
             {...register('personalDetails.firstName')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.firstName
                 ? 'border-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -97,7 +97,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
           <input
             type="text"
             {...register('personalDetails.middleName')}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
           <input
             type="text"
             {...register('personalDetails.lastName')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.lastName
                 ? 'border-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -130,7 +130,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
             {...register('personalDetails.phone')}
             placeholder="08012345678 or +2348012345678"
             maxLength={14}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.phone
                 ? 'border-red-500 ring-2 ring-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -152,7 +152,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
             {...register('personalDetails.phoneSecondary')}
             placeholder="08012345678 or +2348012345678"
             maxLength={14}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.phoneSecondary
                 ? 'border-red-500 ring-2 ring-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -174,7 +174,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
             {...register('personalDetails.emergencyContact')}
             placeholder="08012345678 or +2348012345678"
             maxLength={14}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.emergencyContact
                 ? 'border-red-500 ring-2 ring-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -193,7 +193,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
           </label>
           <select
             {...register('personalDetails.maritalStatus')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.maritalStatus
                 ? 'border-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -219,7 +219,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
           <input
             type="date"
             {...register('personalDetails.dateOfBirth')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
               errors.personalDetails?.dateOfBirth
                 ? 'border-red-500'
                 : 'border-gray-300 dark:border-gray-600'
@@ -246,7 +246,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
               type="text"
               {...register('personalDetails.houseNumber')}
               placeholder="e.g., 12A"
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                 errors.personalDetails?.houseNumber
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
@@ -267,7 +267,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
               type="text"
               {...register('personalDetails.streetName')}
               placeholder="e.g., Allen Avenue"
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                 errors.personalDetails?.streetName
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
@@ -288,7 +288,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
               type="text"
               {...register('personalDetails.busStop')}
               placeholder="e.g., Ikeja Under Bridge"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -300,7 +300,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
               type="text"
               {...register('personalDetails.city')}
               placeholder="e.g., Lagos"
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                 errors.personalDetails?.city
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'
@@ -321,7 +321,7 @@ export default function PersonalDetailsForm({ register, errors, watch, setValue 
               type="text"
               {...register('personalDetails.state')}
               placeholder="e.g., Lagos"
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                 errors.personalDetails?.state
                   ? 'border-red-500'
                   : 'border-gray-300 dark:border-gray-600'

@@ -58,17 +58,22 @@ function AppContent() {
         dateOfBirth: '',
       },
       churchDetails: {
-        memberType: 'Church Member',
+        memberType: 'Worker',
         departments: [],
       },
     },
   });
 
   useEffect(() => {
-    const membersData = storageService.getMembers();
-    const departmentsData = departmentService.getDepartments();
-    setMembers(membersData);
-    setDepartments(departmentsData);
+    const loadData = async () => {
+      const [membersData, departmentsData] = await Promise.all([
+        storageService.getMembers(),
+        departmentService.getDepartments(),
+      ]);
+      setMembers(membersData);
+      setDepartments(departmentsData);
+    };
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -81,14 +86,14 @@ function AppContent() {
     }
   }, [editingMember, reset]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
       const memberToSave = editingMember
         ? { ...data, id: editingMember.id }
         : data;
       
-      storageService.saveMember(memberToSave);
-      const updatedMembers = storageService.getMembers();
+      await storageService.saveMember(memberToSave);
+      const updatedMembers = await storageService.getMembers();
       setMembers(updatedMembers);
       
       // Clear form and show success
@@ -110,7 +115,7 @@ function AppContent() {
           dateOfBirth: '',
         },
         churchDetails: {
-          memberType: 'Church Member',
+          memberType: 'Worker',
           departments: [],
         },
       });
@@ -135,10 +140,10 @@ function AppContent() {
     setSelectedMemberCard(member);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this member?')) {
-      storageService.deleteMember(id);
-      const updatedMembers = storageService.getMembers();
+      await storageService.deleteMember(id);
+      const updatedMembers = await storageService.getMembers();
       setMembers(updatedMembers);
     }
   };
@@ -203,16 +208,16 @@ function AppContent() {
     setEditingMember(null);
   };
 
-  const handleAddDepartment = (name) => {
-    departmentService.saveDepartment(name);
-    const updatedDepartments = departmentService.getDepartments();
+  const handleAddDepartment = async (name) => {
+    await departmentService.saveDepartment(name);
+    const updatedDepartments = await departmentService.getDepartments();
     setDepartments(updatedDepartments);
   };
 
-  const handleDeleteDepartment = (id) => {
+  const handleDeleteDepartment = async (id) => {
     if (confirm('Are you sure you want to delete this department?')) {
-      departmentService.deleteDepartment(id);
-      const updatedDepartments = departmentService.getDepartments();
+      await departmentService.deleteDepartment(id);
+      const updatedDepartments = await departmentService.getDepartments();
       setDepartments(updatedDepartments);
     }
   };

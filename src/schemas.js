@@ -35,7 +35,7 @@ export const departmentSchema = z.object({
 });
 
 export const churchDetailsSchema = z.object({
-  memberType: z.enum(['Worker', 'Volunteer', 'Church Member'], {
+  memberType: z.enum(['Worker', 'Volunteer'], {
     required_error: 'Please select a member type',
   }),
   departments: z.array(departmentSchema).optional(),
