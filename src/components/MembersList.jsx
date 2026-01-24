@@ -4,6 +4,18 @@ import { useState } from 'react';
 export default function MembersList({ members, onEdit, onDelete, onExport, onViewCard }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [columnSearch, setColumnSearch] = useState({
+    id: '',
+    name: '',
+    phone: '',
+    address: '',
+    memberType: '',
+    departments: ''
+  });
+
+  const handleColumnSearchChange = (column, value) => {
+    setColumnSearch(prev => ({ ...prev, [column]: value }));
+  };
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
@@ -18,7 +30,23 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
     const matchesType =
       filterType === 'all' || member.churchDetails.memberType === filterType;
 
-    return matchesSearch && matchesType;
+    // Column-specific search
+    const matchesColumnSearch = 
+      (columnSearch.id === '' || member.id.toLowerCase().includes(columnSearch.id.toLowerCase())) &&
+      (columnSearch.name === '' || 
+        `${member.personalDetails.firstName} ${member.personalDetails.middleName} ${member.personalDetails.lastName}`
+          .toLowerCase()
+          .includes(columnSearch.name.toLowerCase())) &&
+      (columnSearch.phone === '' || member.personalDetails.phone.includes(columnSearch.phone)) &&
+      (columnSearch.address === '' || 
+        `${member.personalDetails.houseNumber} ${member.personalDetails.streetName} ${member.personalDetails.busStop} ${member.personalDetails.city} ${member.personalDetails.state}`
+          .toLowerCase()
+          .includes(columnSearch.address.toLowerCase())) &&
+      (columnSearch.memberType === '' || member.churchDetails.memberType.toLowerCase().includes(columnSearch.memberType.toLowerCase())) &&
+      (columnSearch.departments === '' || 
+        member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(columnSearch.departments.toLowerCase()) || d.role.toLowerCase().includes(columnSearch.departments.toLowerCase())));
+
+    return matchesSearch && matchesType && matchesColumnSearch;
   });
 
   if (members.length === 0) {
@@ -75,22 +103,64 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Member ID
+                <div className="mb-2">Member ID</div>
+                <input
+                  type="text"
+                  placeholder="Search ID..."
+                  value={columnSearch.id}
+                  onChange={(e) => handleColumnSearchChange('id', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Name
+                <div className="mb-2">Name</div>
+                <input
+                  type="text"
+                  placeholder="Search name..."
+                  value={columnSearch.name}
+                  onChange={(e) => handleColumnSearchChange('name', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Phone
+                <div className="mb-2">Phone</div>
+                <input
+                  type="text"
+                  placeholder="Search phone..."
+                  value={columnSearch.phone}
+                  onChange={(e) => handleColumnSearchChange('phone', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Address
+                <div className="mb-2">Address</div>
+                <input
+                  type="text"
+                  placeholder="Search address..."
+                  value={columnSearch.address}
+                  onChange={(e) => handleColumnSearchChange('address', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Member Type
+                <div className="mb-2">Member Type</div>
+                <input
+                  type="text"
+                  placeholder="Search type..."
+                  value={columnSearch.memberType}
+                  onChange={(e) => handleColumnSearchChange('memberType', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Departments
+                <div className="mb-2">Departments</div>
+                <input
+                  type="text"
+                  placeholder="Search dept..."
+                  value={columnSearch.departments}
+                  onChange={(e) => handleColumnSearchChange('departments', e.target.value)}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                />
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Actions
