@@ -2,6 +2,7 @@ import DepartmentInput from './DepartmentInput';
 
 export default function ChurchDetailsForm({ watch, setValue, errors, availableDepartments }) {
   const memberType = watch('churchDetails.memberType');
+  const status = watch('churchDetails.status') || 'Active';
   const departments = watch('churchDetails.departments') || [];
 
   const handleDepartmentsChange = (newDepartments) => {
@@ -47,6 +48,34 @@ export default function ChurchDetailsForm({ watch, setValue, errors, availableDe
             {errors.churchDetails.memberType.message}
           </p>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Status <span className="text-red-500">*</span>
+        </label>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              value="Active"
+              checked={status === 'Active'}
+              onChange={() => setValue('churchDetails.status', 'Active')}
+              className="w-4 h-4 text-green-600 focus:ring-green-500"
+            />
+            <span className="text-gray-700 dark:text-gray-300">Active</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              value="Inactive"
+              checked={status === 'Inactive'}
+              onChange={() => setValue('churchDetails.status', 'Inactive')}
+              className="w-4 h-4 text-red-600 focus:ring-red-500"
+            />
+            <span className="text-gray-700 dark:text-gray-300">Inactive</span>
+          </label>
+        </div>
       </div>
 
       {requiresDepartments && (

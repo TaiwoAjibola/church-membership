@@ -60,6 +60,7 @@ function AppContent() {
       },
       churchDetails: {
         memberType: 'Worker',
+        status: 'Active',
         departments: [],
       },
     },
@@ -148,6 +149,7 @@ function AppContent() {
         },
         churchDetails: {
           memberType: 'Worker',
+          status: 'Active',
           departments: [],
         },
       });
@@ -187,7 +189,7 @@ function AppContent() {
     }
   };
 
-  const handleExportCSV = () => {
+  const handleExportCSV = (membersToExport = members) => {
     const headers = [
       'Member ID',
       'First Name',
@@ -204,10 +206,11 @@ function AppContent() {
       'Marital Status',
       'Date of Birth',
       'Member Type',
+      'Status',
       'Departments',
     ];
 
-    const rows = members.map((member) => [
+    const rows = membersToExport.map((member) => [
       member.id,
       member.personalDetails.firstName,
       member.personalDetails.middleName || '',
@@ -223,6 +226,7 @@ function AppContent() {
       member.personalDetails.maritalStatus,
       member.personalDetails.dateOfBirth,
       member.churchDetails.memberType,
+      member.churchDetails.status || 'Active',
       member.churchDetails.departments
         ?.map((d) => `${d.name} (${d.role})`)
         .join('; ') || '',
@@ -273,19 +277,19 @@ function AppContent() {
     });
   };
 
-  const handleDeleteDepartment = async (id) => {
-    if (confirm('Are you sure you want to delete this department?')) {
-      // Optimistic update - remove immediately
-      const optimisticDepts = departments.filter(d => d.id !== id);
-      setDepartments(optimisticDepts);
-      
-      // Delete from database in background
-      departmentService.deleteDepartment(id).catch(error => {
-        console.error('Error deleting department:', error);
-        // On error, refetch to restore correct state
-        departmentService.getDepartments().then(setDepartments);
-      });
-    }
+  const handleUpdateDepartment = async (id, newName) => {
+    // Optimistic update - update immediately
+    const optimisticDepts = departments.map(d => 
+      d.id === id ? { ...d, name: newName } : d
+    );
+    setDepartments(optimisticDepts);
+    
+    // Update in database in background
+    departmentService.updateDepartment(id, newName).catch(error => {
+      console.error('Error updating department:', error);
+      // On error, refetch to restore correct state
+      departmentService.getDepartments().then(setDepartments);
+    });
   };
 
   // Show login if not authenticated
@@ -453,7 +457,7 @@ function AppContent() {
           <DepartmentManager
             departments={departments}
             onAdd={handleAddDepartment}
-            onDelete={handleDeleteDepartment}
+            onUpdate={handleUpdateDepartment}
           />
         )}
       </div>

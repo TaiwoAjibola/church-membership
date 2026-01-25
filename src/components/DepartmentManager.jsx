@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Plus, Trash2, Building2 } from 'lucide-react';
+import { Plus, Edit2, Building2 } from 'lucide-react';
 
-export default function DepartmentManager({ departments, onAdd, onDelete }) {
+export default function DepartmentManager({ departments, onAdd, onUpdate }) {
   const [newDeptName, setNewDeptName] = useState('');
+  const [editingDept, setEditingDept] = useState(null);
+  const [editName, setEditName] = useState('');
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -10,6 +12,24 @@ export default function DepartmentManager({ departments, onAdd, onDelete }) {
       onAdd(newDeptName);
       setNewDeptName('');
     }
+  };
+
+  const handleEditClick = (dept) => {
+    setEditingDept(dept.id);
+    setEditName(dept.name);
+  };
+
+  const handleSaveEdit = (id) => {
+    if (editName.trim()) {
+      onUpdate(id, editName.trim());
+    }
+    setEditingDept(null);
+    setEditName('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDept(null);
+    setEditName('');
   };
 
   return (
@@ -45,21 +65,49 @@ export default function DepartmentManager({ departments, onAdd, onDelete }) {
               key={dept.id}
               className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-650 transition-colors"
             >
-              <div className="flex flex-col">
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {dept.name}
-                </span>
-                <span className="text-sm font-mono text-blue-600 dark:text-blue-400 mt-1">
-                  {dept.id}
-                </span>
-              </div>
-              <button
-                onClick={() => onDelete(dept.id)}
-                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                aria-label="Delete department"
-              >
-                <Trash2 size={18} />
-              </button>
+              {editingDept === dept.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    autoFocus
+                  />
+                  <div className="flex gap-2 ml-2">
+                    <button
+                      onClick={() => handleSaveEdit(dept.id)}
+                      className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-3 py-1.5 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col">
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {dept.name}
+                    </span>
+                    <span className="text-sm font-mono text-blue-600 dark:text-blue-400 mt-1">
+                      {dept.id}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleEditClick(dept)}
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                    aria-label="Edit department"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>

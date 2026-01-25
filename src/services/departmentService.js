@@ -1,17 +1,31 @@
 import { supabase } from '../lib/supabase';
 
 const generateDepartmentId = async () => {
-  const { count, error } = await supabase
+  // Get all departments and find the highest number
+  const { data, error } = await supabase
     .from('departments')
-    .select('id', { count: 'exact', head: true });
+    .select('id')
+    .like('id', 'JCC-DEPT-%');
   
   if (error) {
-    console.error('Error counting departments:', error);
+    console.error('Error fetching departments:', error);
     return 'JCC-DEPT-001';
   }
   
-  const nextCount = (count || 0) + 1;
-  return `JCC-DEPT-${String(nextCount).padStart(3, '0')}`;
+  if (!data || data.length === 0) {
+    return 'JCC-DEPT-001';
+  }
+  
+  // Extract numbers from IDs and find the maximum
+  const numbers = data.map(dept => {
+    const match = dept.id.match(/JCC-DEPT-(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  });
+  
+  const maxNumber = Math.max(...numbers, 0);
+  const nextNumber = maxNumber + 1;
+  
+  return `JCC-DEPT-${String(nextNumber).padStart(3, '0')}`;
 };
 
 export const departmentService = {
@@ -93,7 +107,7 @@ export const departmentService = {
         .eq('id', id);
       
       if (error) throw error;
-      return await departmentService.getDepartments();
+      return null;
     } catch (error) {
       console.error('Error updating department:', error);
       throw error;

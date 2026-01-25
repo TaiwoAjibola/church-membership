@@ -10,9 +10,33 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
     memberType: '',
     departments: ''
   });
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   const handleColumnSearchChange = (column, value) => {
     setColumnSearch(prev => ({ ...prev, [column]: value }));
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedMembers(filteredMembers.map(m => m.id));
+    } else {
+      setSelectedMembers([]);
+    }
+  };
+
+  const handleSelectMember = (memberId) => {
+    setSelectedMembers(prev => {
+      if (prev.includes(memberId)) {
+        return prev.filter(id => id !== memberId);
+      } else {
+        return [...prev, memberId];
+      }
+    });
+  };
+
+  const handleExportSelected = () => {
+    const membersToExport = members.filter(m => selectedMembers.includes(m.id));
+    onExport(membersToExport);
   };
 
   const filteredMembers = members.filter((member) => {
@@ -49,14 +73,30 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Members List ({filteredMembers.length} of {members.length})
+            {selectedMembers.length > 0 && (
+              <span className="ml-3 text-sm font-normal text-blue-600 dark:text-blue-400">
+                ({selectedMembers.length} selected)
+              </span>
+            )}
           </h2>
-          <button
-            onClick={onExport}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download size={18} />
-            Export CSV
-          </button>
+          <div className="flex gap-2">
+            {selectedMembers.length > 0 && (
+              <button
+                onClick={handleExportSelected}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Download size={18} />
+                Export Selected ({selectedMembers.length})
+              </button>
+            )}
+            <button
+              onClick={() => onExport(members)}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Download size={18} />
+              Export All
+            </button>
+          </div>
         </div>
       </div>
 
@@ -64,6 +104,14 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
         <table className="w-full">
           <thead className="bg-blue-600 dark:bg-blue-800">
             <tr>
+              <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                <input
+                  type="checkbox"
+                  checked={selectedMembers.length === filteredMembers.length && filteredMembers.length > 0}
+                  onChange={handleSelectAll}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                 <div className="mb-2">Member ID</div>
                 <input
@@ -115,6 +163,9 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                 />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                <div className="mb-2">Status</div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
                 <div className="mb-2">Departments</div>
                 <input
                   type="text"
@@ -132,7 +183,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
           <tbody className="bg-white dark:bg-gray-800">
             {filteredMembers.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan="9" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                   No members found matching your search criteria.
                 </td>
               </tr>
@@ -144,6 +195,14 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                     index !== filteredMembers.length - 1 ? 'border-b border-gray-200 dark:border-gray-700' : ''
                   }`}
                 >
+                  <td className="px-4 py-4 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedMembers.includes(member.id)}
+                      onChange={() => handleSelectMember(member.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
                       {member.id}
@@ -191,6 +250,17 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                     }`}
                   >
                     {member.churchDetails.memberType}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span
+                    className={`px-3 py-1.5 inline-flex text-xs leading-4 font-semibold rounded-lg ${
+                      member.churchDetails.status === 'Active'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                        : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                    }`}
+                  >
+                    {member.churchDetails.status || 'Active'}
                   </span>
                 </td>
                 <td className="px-6 py-4">
