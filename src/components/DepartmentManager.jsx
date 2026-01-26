@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Plus, Edit2, Building2 } from 'lucide-react';
+import { Plus, Edit2, Building2, RefreshCw } from 'lucide-react';
 
-export default function DepartmentManager({ departments, onAdd, onUpdate }) {
+export default function DepartmentManager({ departments, onAdd, onUpdate, onRenumber }) {
   const [newDeptName, setNewDeptName] = useState('');
   const [editingDept, setEditingDept] = useState(null);
   const [editName, setEditName] = useState('');
+  const [isRenumbering, setIsRenumbering] = useState(false);
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -32,13 +33,40 @@ export default function DepartmentManager({ departments, onAdd, onUpdate }) {
     setEditName('');
   };
 
+  const handleRenumber = async () => {
+    if (confirm('This will renumber all departments sequentially (001, 002, 003...) based on creation date. Continue?')) {
+      setIsRenumbering(true);
+      try {
+        await onRenumber();
+        alert('Departments renumbered successfully!');
+      } catch (error) {
+        alert('Error renumbering departments. Please try again.');
+      } finally {
+        setIsRenumbering(false);
+      }
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-4">
-      <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 pb-3">
-        <Building2 className="text-primary-600 dark:text-primary-400" size={24} />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Manage Departments
-        </h2>
+      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3">
+        <div className="flex items-center gap-2">
+          <Building2 className="text-primary-600 dark:text-primary-400" size={24} />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Manage Departments
+          </h2>
+        </div>
+        {departments.length > 0 && (
+          <button
+            onClick={handleRenumber}
+            disabled={isRenumbering}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Renumber all departments sequentially"
+          >
+            <RefreshCw size={16} className={isRenumbering ? 'animate-spin' : ''} />
+            {isRenumbering ? 'Renumbering...' : 'Fix Numbering'}
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleAdd} className="flex gap-2">

@@ -292,6 +292,22 @@ function AppContent() {
     });
   };
 
+  const handleRenumberDepartments = async () => {
+    try {
+      await departmentService.renumberDepartments();
+      // Refetch departments and members after renumbering
+      const [updatedDepartments, updatedMembers] = await Promise.all([
+        departmentService.getDepartments(),
+        storageService.getMembers(),
+      ]);
+      setDepartments(updatedDepartments);
+      setMembers(updatedMembers);
+    } catch (error) {
+      console.error('Error renumbering departments:', error);
+      throw error;
+    }
+  };
+
   // Show login if not authenticated
   if (!isAuthenticated) {
     return <Login />;
@@ -458,6 +474,7 @@ function AppContent() {
             departments={departments}
             onAdd={handleAddDepartment}
             onUpdate={handleUpdateDepartment}
+            onRenumber={handleRenumberDepartments}
           />
         )}
       </div>

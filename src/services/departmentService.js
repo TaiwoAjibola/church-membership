@@ -113,4 +113,87 @@ export const departmentService = {
       throw error;
     }
   },
+
+  renumberDepartments: async () => {
+    try {
+      // 1. Get all departments sorted by creation date
+      const { data: departments, error: fetchError } = await supabase
+        .from('departments')
+        .select('*')
+        .order('created_at', { ascending: true });
+      
+      if (fetchError) throw fetchError;
+      
+      if (!departments || departments.length === 0) {
+        return { success: true, message: 'No departments to renumber' };
+      }
+
+      // 2. Create mapping of old IDs to new IDs
+      const idMapping = {};
+      departments.forEach((dept, index) => {
+        const newId = `JCC-DEPT-${String(index + 1).padStart(3, '0')}`;
+        idMapping[dept.id] = newId;
+      });
+
+      // 3. Get all members to update their department references
+      const { data: members, error: membersError } = await supabase
+        .from('members')
+        .select('*');
+      
+      if (membersError) throw membersError;
+
+      // 4. Update all departments with new IDs
+      for (const dept of departments) {
+        const newId = idMapping[dept.id];
+        if (dept.id !== newId) {
+          // Delete old record
+          await supabase.from('departments').delete().eq('id', dept.id);
+          
+          // Insert with new ID
+          await supabase.from('departments').insert({
+            id: newId,
+            name: dept.name,
+            created_at: dept.created_at,
+          });
+        }
+      }
+
+      // 5. Update member records that reference these departments
+      if (members && members.length > 0) {
+        for (const member of members) {
+          if (member.church_details?.departments && Array.isArray(member.church_details.departments)) {
+            let updated = false;
+            const updatedDepartments = member.church_details.departments.map(dept => {
+              if (idMapping[dept.id] && dept.id !== idMapping[dept.id]) {
+                updated = true;
+                return { ...dept, id: idMapping[dept.id] };
+              }
+              return dept;
+            });
+
+            if (updated) {
+              await supabase
+                .from('members')
+                .update({
+                  church_details: {
+                    ...member.church_details,
+                    departments: updatedDepartments
+                  }
+                })
+                .eq('id', member.id);
+            }
+          }
+        }
+      }
+
+      return { 
+        success: true, 
+        message: `Successfully renumbered ${departments.length} departments`,
+        count: departments.length 
+      };
+    } catch (error) {
+      console.error('Error renumbering departments:', error);
+      throw error;
+    }
+  },
 };
