@@ -255,7 +255,7 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-3 py-1.5 inline-flex text-xs leading-4 font-semibold rounded-lg ${
-                      member.churchDetails.status === 'Active'
+                      (member.churchDetails.status || 'Active').trim().toLowerCase() === 'active'
                         ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
                         : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
                     }`}

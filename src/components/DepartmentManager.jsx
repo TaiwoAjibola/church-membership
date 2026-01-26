@@ -56,6 +56,7 @@ export default function DepartmentManager({ departments, onAdd, onUpdate, onRenu
             Manage Departments
           </h2>
         </div>
+        {/* Commented out - Use only when needed to fix department numbering sequence
         {departments.length > 0 && (
           <button
             onClick={handleRenumber}
@@ -67,6 +68,7 @@ export default function DepartmentManager({ departments, onAdd, onUpdate, onRenu
             {isRenumbering ? 'Renumbering...' : 'Fix Numbering'}
           </button>
         )}
+        */}
       </div>
 
       <form onSubmit={handleAdd} className="flex gap-2">
