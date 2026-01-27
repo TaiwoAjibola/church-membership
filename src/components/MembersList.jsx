@@ -8,10 +8,10 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
     phone: '',
     address: '',
     memberType: '',
-    status: '',
     departments: ''
   });
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('all'); // all | active | inactive
 
   const handleColumnSearchChange = (column, value) => {
     setColumnSearch(prev => ({ ...prev, [column]: value }));
@@ -40,10 +40,9 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
     onExport(membersToExport);
   };
 
-  const filteredMembers = members.filter((member) => {
+  const baseFilteredMembers = members.filter((member) => {
     // Column-specific search only
     const normalizedStatus = (member.churchDetails.status || 'Active').trim().toLowerCase();
-    const normalizedStatusQuery = columnSearch.status.trim().toLowerCase();
 
     const matchesColumnSearch = 
       (columnSearch.id === '' || member.id.toLowerCase().includes(columnSearch.id.toLowerCase())) &&
@@ -57,11 +56,22 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
           .toLowerCase()
           .includes(columnSearch.address.toLowerCase())) &&
       (columnSearch.memberType === '' || member.churchDetails.memberType.toLowerCase().includes(columnSearch.memberType.toLowerCase())) &&
-      (columnSearch.status.trim() === '' || normalizedStatus.includes(normalizedStatusQuery)) &&
       (columnSearch.departments === '' || 
         member.churchDetails.departments?.some((d) => d.name.toLowerCase().includes(columnSearch.departments.toLowerCase()) || d.role.toLowerCase().includes(columnSearch.departments.toLowerCase())));
 
     return matchesColumnSearch;
+  });
+
+  const activeCount = baseFilteredMembers.filter(
+    (m) => (m.churchDetails.status || 'Active').trim().toLowerCase() === 'active'
+  ).length;
+  const inactiveCount = baseFilteredMembers.length - activeCount;
+
+  const filteredMembers = baseFilteredMembers.filter((member) => {
+    const normalizedStatus = (member.churchDetails.status || 'Active').trim().toLowerCase();
+    if (statusFilter === 'active') return normalizedStatus === 'active';
+    if (statusFilter === 'inactive') return normalizedStatus !== 'active';
+    return true;
   });
 
   if (members.length === 0) {
@@ -196,13 +206,84 @@ export default function MembersList({ members, onEdit, onDelete, onExport, onVie
                 />
               </th>
               <th className="px-6 py-3">
-                <input
-                  type="text"
-                  placeholder="Search status"
-                  value={columnSearch.status}
-                  onChange={(e) => handleColumnSearchChange('status', e.target.value)}
-                  className="w-full h-9 px-3 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-sm"
-                />
+                <div className="inline-flex w-full items-center justify-start">
+                  <div className="inline-flex rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 p-1 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('all')}
+                      className={`px-3 h-8 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                        statusFilter === 'all'
+                          ? 'bg-blue-600 text-white shadow'
+                          : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      aria-pressed={statusFilter === 'all'}
+                      title="Show all statuses"
+                    >
+                      All
+                      <span
+                        className={`ml-2 inline-flex items-center justify-center min-w-[28px] px-2 h-5 rounded-full text-xs ${
+                          statusFilter === 'all'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+                        }`}
+                      >
+                        {baseFilteredMembers.length}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('active')}
+                      className={`px-3 h-8 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                        statusFilter === 'active'
+                          ? 'bg-green-600 text-white shadow'
+                          : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      aria-pressed={statusFilter === 'active'}
+                      title="Show only active"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500" />
+                        Active
+                      </span>
+                      <span
+                        className={`ml-2 inline-flex items-center justify-center min-w-[28px] px-2 h-5 rounded-full text-xs ${
+                          statusFilter === 'active'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300'
+                        }`}
+                      >
+                        {activeCount}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('inactive')}
+                      className={`px-3 h-8 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                        statusFilter === 'inactive'
+                          ? 'bg-red-600 text-white shadow'
+                          : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      aria-pressed={statusFilter === 'inactive'}
+                      title="Show only inactive"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-red-500" />
+                        Inactive
+                      </span>
+                      <span
+                        className={`ml-2 inline-flex items-center justify-center min-w-[28px] px-2 h-5 rounded-full text-xs ${
+                          statusFilter === 'inactive'
+                            ? 'bg-white/20 text-white'
+                            : 'bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                        }`}
+                      >
+                        {inactiveCount}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </th>
               <th className="px-6 py-3">
                 <input
